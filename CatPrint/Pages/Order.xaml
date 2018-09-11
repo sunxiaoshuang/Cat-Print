@@ -1,0 +1,77 @@
+﻿<Page x:Class="CatPrint.Pages.Order"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:CatPrint.Pages"
+      xmlns:model="clr-namespace:CatPrint.Model"
+      xmlns:convert="clr-namespace:CatPrint.Converter"
+      xmlns:sys="clr-namespace:System.Collections;assembly=mscorlib"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Order">
+    <Page.Resources>
+        <convert:DateTimeToStringValueConverter x:Key="dtts" />
+        <convert:OrderStatusToStringValueConverter x:Key="osts" />
+        <convert:OrderIdentifierToStringValueConverter x:Key="oits" />
+        <DataTemplate x:Key="ct">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="查看" Margin="5,0" Padding="5" Cursor="Hand" Click="Detail"/>
+                <Button Content="打印小票" Margin="5,0" Padding="5" Cursor="Hand" Click="Print"/>
+            </StackPanel>
+        </DataTemplate>
+        <Style TargetType="Button" x:Key="myButtom">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+    <Grid Background="#333">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="3"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="3"/>
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+        <Button Width="80" HorizontalAlignment="Left" Click="Back" Margin="0,5,0,0" Cursor="Hand">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="/Assets/Icon/left.png" Height="15" Width="15" Margin="0,0,5,0" />
+                <Label Content="返回"/>
+            </StackPanel>
+        </Button>
+        <Label Grid.ColumnSpan="3" Content="订单管理" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"></Label>
+        <ListView x:Name="list" Grid.Row="2" Grid.ColumnSpan="3">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="当日编号" DisplayMemberBinding="{Binding Identifier, Converter={StaticResource oits}}" />
+                    <GridViewColumn Header="订单编号" DisplayMemberBinding="{Binding OrderCode}" />
+                    <GridViewColumn Header="下单时间" DisplayMemberBinding="{Binding PayTime, Converter={StaticResource dtts}}"/>
+                    <GridViewColumn Header="订单状态" DisplayMemberBinding="{Binding Status, Converter={StaticResource osts}}"/>
+                    <GridViewColumn Header="订单金额" DisplayMemberBinding="{Binding Price}"/>
+                    <GridViewColumn Header="收货人" DisplayMemberBinding="{Binding ReceiverName}"/>
+                    <GridViewColumn Header="收货人电话" DisplayMemberBinding="{Binding Phone}"/>
+                    <GridViewColumn Header="操作" CellTemplate="{StaticResource ct}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+            <Button Content="上一页" Width="80" x:Name="btnPre" Click="Pre" Cursor="Hand"></Button>
+            <Button Content="下一页" Margin="10, 0" Width="80" x:Name="btnNext" Click="Next" Cursor="Hand"></Button>
+        </StackPanel>
+        <Grid Grid.RowSpan="5" x:Name="spPrint" Visibility="Hidden" Background="Transparent" Grid.ColumnSpan="3">
+            <StackPanel Background="#000" Opacity="0.7"></StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!--<Image Source="/Assets/Gif/loading.gif" Width="30" Height="30" Margin="5,0" />-->
+                <Label HorizontalAlignment="Center" VerticalAlignment="Center">打印中...</Label>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

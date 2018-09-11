@@ -1,0 +1,42 @@
+﻿<Page x:Class="CatPrint.Pages.Main"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:CatPrint.Pages"
+      mc:Ignorable="d" 
+      Title="菜单">
+    <Page.Resources>
+        <Style TargetType="Label">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Margin" Value="0, 20"/>
+        </Style>
+        <Style TargetType="StackPanel">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+    <WrapPanel Background="White">
+        <Border BorderBrush="#ddd" Margin="10" CornerRadius="6" BorderThickness="1">
+            <Button Click="Button_Click" Background="#fff" BorderBrush="Transparent" Tag="Order" Style="{x:Null}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="sp1" Height="200" Width="200">
+                    <Image Source="/Assets/Images/order.png" Width="150" Height="150"/>
+                    <Label Content="订单管理" Height="50"></Label>
+                </StackPanel>
+            </Button>
+        </Border>
+        <Border BorderBrush="#ddd" Margin="10" CornerRadius="6" BorderThickness="1">
+            <Button Click="Button_Click" Background="#fff" BorderBrush="Transparent" Tag="Setting" Style="{x:Null}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="200" Width="200">
+                    <Image Source="/Assets/Images/setting.png" Width="150" Height="150"/>
+                    <Label Content="打印设置" Height="50"></Label>
+                </StackPanel>
+            </Button>
+        </Border>
+    </WrapPanel>
+</Page>

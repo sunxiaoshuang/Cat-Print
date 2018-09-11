@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatPrint", "CatPrint\CatPrint.csproj", "{B9508AA2-55DA-438C-B876-7039685F6186}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "CatPrintSetup", "CatPrintSetup\CatPrintSetup.vdproj", "{806B1E77-001A-46C7-B794-F7F5D516FCB7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B9508AA2-55DA-438C-B876-7039685F6186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9508AA2-55DA-438C-B876-7039685F6186}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9508AA2-55DA-438C-B876-7039685F6186}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9508AA2-55DA-438C-B876-7039685F6186}.Release|Any CPU.Build.0 = Release|Any CPU
+		{806B1E77-001A-46C7-B794-F7F5D516FCB7}.Debug|Any CPU.ActiveCfg = Debug
+		{806B1E77-001A-46C7-B794-F7F5D516FCB7}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ED820850-7AFF-470D-95D2-26A76557BA3D}
+	EndGlobalSection
+EndGlobal

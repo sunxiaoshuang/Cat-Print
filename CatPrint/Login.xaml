@@ -1,0 +1,61 @@
+﻿<Window x:Class="CatPrint.Login"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CatPrint"
+        mc:Ignorable="d" FocusManager.FocusedElement="{Binding ElementName=username}"
+        Title="登录" Height="300" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"></Setter>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="16"></Setter>
+            <Setter Property="Height" Value="30"></Setter>
+            <Setter Property="BorderBrush" Value="Transparent"></Setter>
+        </Style>
+        <Style TargetType="PasswordBox">
+            <Setter Property="FontSize" Value="16"></Setter>
+            <Setter Property="Height" Value="30"></Setter>
+            <Setter Property="BorderBrush" Value="Transparent"></Setter>
+        </Style>
+        <Style TargetType="Border">
+            <Setter Property="CornerRadius" Value="5"></Setter>
+            <Setter Property="BorderBrush" Value="Gray"></Setter>
+            <Setter Property="Margin" Value="5"></Setter>
+            <Setter Property="BorderThickness" Value="1"></Setter>
+            <Setter Property="Padding" Value="2"></Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Style="{x:Null}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="50"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Image Source="/Assets/Images/logo.jpg" HorizontalAlignment="Center" Grid.ColumnSpan="3" Height="80" Width="80" VerticalAlignment="Bottom"></Image>
+        <StackPanel Grid.Row="1" VerticalAlignment="Center">
+            <TextBlock Text="用户名：" HorizontalAlignment="Right"/>
+        </StackPanel>
+        <Border Grid.Row="1" Grid.Column="1">
+            <TextBox BorderBrush="Transparent" x:Name="username"></TextBox>
+        </Border>
+        <StackPanel Grid.Row="2" VerticalAlignment="Center" Margin="5">
+            <TextBlock Text="密码：" HorizontalAlignment="Right" />
+        </StackPanel>
+        <Border Grid.Row="2" Grid.Column="1">
+            <PasswordBox x:Name="pwd"></PasswordBox>
+        </Border>
+        <Button Grid.Row="3" Grid.Column="1" Content="登录" Margin="5" Click="Button_Click"></Button>
+    </Grid>
+</Window>
+
+    
