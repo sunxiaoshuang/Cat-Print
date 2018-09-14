@@ -53,32 +53,43 @@ namespace CatPrint
                 MessageBox.Show("请输入密码");
                 return;
             }
-            var data = await Code.Request.Login(name, password);
-            if (data.Success)
+            try
             {
-                var business = JsonConvert.DeserializeObject<Business>(data.Data.ToString());
-                ApplicationObject.App.Business = business;
-                ApplicationObject.App.Init();
-                try
+                var data = await Code.Request.Login(name, password);
+                if (data.Success)
                 {
-                    var window = new MainWindow();
-                    if(!window.InitSuccess)
+                    var business = JsonConvert.DeserializeObject<Business>(data.Data.ToString());
+                    ApplicationObject.App.Business = business;
+                    ApplicationObject.App.Init();
+                    try
                     {
-                        window.Close();
-                        return;
+                        var window = new MainWindow();
+                        //if(!window.InitSuccess)
+                        //{
+                        //    window.Close();
+                        //    return;
+                        //}
+                        Application.Current.MainWindow = window;
+                        Application.Current.MainWindow.Show();
+                        this.Close();
                     }
-                    Application.Current.MainWindow = window;
-                    Application.Current.MainWindow.Show();
-                    this.Close();
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("系统错误，" + ex.Message);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("系统错误，" + ex.Message);
+                    MessageBox.Show(data.Msg);
                 }
             }
-            else
+            catch (HttpRequestException)
             {
-                MessageBox.Show(data.Msg);
+                MessageBox.Show("网络请求错误，请检查网络连接");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }

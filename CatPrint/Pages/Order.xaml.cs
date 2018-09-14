@@ -3,6 +3,7 @@ using CatPrint.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -35,10 +36,21 @@ namespace CatPrint.Pages
 
         private async void LoadData()
         {
-            var result = await Request.GetOrders(ApplicationObject.App.Business, Paging);
-            list.ItemsSource = result;
-            btnPre.IsEnabled = Paging.PageIndex > 1;
-            btnNext.IsEnabled = Paging.PageIndex < Paging.PageCount;
+            try
+            {
+                var result = await Request.GetOrders(ApplicationObject.App.Business, Paging);
+                list.ItemsSource = result;
+                btnPre.IsEnabled = Paging.PageIndex > 1;
+                btnNext.IsEnabled = Paging.PageIndex < Paging.PageCount;
+            }
+            catch (HttpRequestException)
+            {
+                MessageBox.Show("网络请求错误，请检查网络连接");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         private void Back(object sender, RoutedEventArgs e)
         {

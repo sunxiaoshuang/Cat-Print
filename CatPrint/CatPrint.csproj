@@ -325,15 +325,15 @@
     <Resource Include="Assets\Icon\remove.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\Video\1.mp3">
+    <Content Include="Assets\Video\1.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Video\2.mp3">
+    </Content>
+    <Content Include="Assets\Video\2.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Video\3.mp3">
+    </Content>
+    <Content Include="Assets\Video\3.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
