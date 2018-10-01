@@ -16,11 +16,20 @@ namespace CatPrint.Code
 {
     public static class Request
     {
+        /// <summary>
+        /// 请求服务地址
+        /// </summary>
         public static string ApiUrl { get; set; }
         static Request()
         {
             ApiUrl = ConfigurationManager.AppSettings["ApiUrl"];
         }
+        /// <summary>
+        /// 商户登录
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="pwd"></param>
+        /// <returns></returns>
         public async static Task<JsonData> Login(string code, string pwd)
         {
             using (var client = new HttpClient())
@@ -31,6 +40,12 @@ namespace CatPrint.Code
                 return data;
             }
         }
+        /// <summary>
+        /// 获取商户订单列表
+        /// </summary>
+        /// <param name="business">商户对象</param>
+        /// <param name="paging">分页参数</param>
+        /// <returns></returns>
         public async static Task<List<Order>> GetOrders(Business business, PagingQuery paging)
         {
             using (var client = new HttpClient())
@@ -48,6 +63,11 @@ namespace CatPrint.Code
                 return list;
             }
         }
+        /// <summary>
+        /// 根据订单编号获取东单
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public async static Task<Order> GetOrder(string code)
         {
             try
@@ -65,6 +85,11 @@ namespace CatPrint.Code
                 return null;
             }
         }
+        /// <summary>
+        /// 获取商品类型列表
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
         public async static Task<List<ProductType>> GetTypes(Business business)
         {
             using (var client = new HttpClient())
@@ -75,7 +100,25 @@ namespace CatPrint.Code
                 return list;
             }
         }
-
+        /// <summary>
+        /// 自动接单
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public async static Task<JsonData> Recevice(Order order)
+        {
+            using (var client = new HttpClient())
+            {
+                var res = await client.GetAsync(ApiUrl + $"/order/recevice/{order.ID}");
+                var content = await res.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<JsonData>(content);
+            }
+        }
+        /// <summary>
+        /// 打印订单
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
         public static bool Print(Order order)
         {
             Socket mySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -132,7 +175,11 @@ namespace CatPrint.Code
             mySocket.Close();
             return true;
         }
-
+        /// <summary>
+        /// 将字符串转化为二进制数组
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         private static byte[] TextToByte(string text)
         {
             return Encoding.Default.GetBytes(text);

@@ -1,26 +1,15 @@
 ﻿using CatPrint.Code;
 using CatPrint.Model;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Net;
 using System.Runtime.InteropServices;
 //using System.Net.Sockets;
 //using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WebSocketSharp;
 
 namespace CatPrint
@@ -201,7 +190,7 @@ namespace CatPrint
                     if (!isSuccess)
                     {
                         IsConnect = false;
-                        PlayMedia("Assets/Video/3.mp3");
+                        PlayMedia("Assets/Video/4.mp3");
                         //while (MessageBox.Show($"网络异常，新订单提醒已关闭，点击确定后重新连接", "通信异常", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                         //{
                         //    if(Connect())
@@ -243,28 +232,28 @@ namespace CatPrint
                 var buffer = new byte[512];
                 string code = e.Data;
                 var order = await Request.GetOrder(code);
-                if (order != null)
+                if (order == null) return;
+                var result = await Request.Recevice(order);
+                this.Dispatcher.Invoke(() =>
                 {
-                    this.Dispatcher.Invoke(() =>
+                    var isAuto = false;             // 是否已经接收订单
+                    if (ApplicationObject.App.Business.IsAutoReceipt)
                     {
-                        ApplicationObject.Print(order);
-                    });
+                        // 如果当前商户处于自动接单状态，则处理订单
+                        isAuto = result.Success;
+                    }
                     var filename = string.Empty;
-                    if (order.Status == Enum.OrderStatus.Payed)
+                    if (!isAuto)
                     {
                         filename = "1.mp3";
                     }
-                    else if (order.Status == Enum.OrderStatus.Receipted)
+                    else
                     {
                         filename = "2.mp3";
                     }
                     PlayMedia("Assets/Video/" + filename);
-
-                }
-                else
-                {
-                    MessageBox.Show(code);
-                }
+                    ApplicationObject.Print(order);
+                }, System.Windows.Threading.DispatcherPriority.Normal);
             }
             catch (Exception ex)
             {
@@ -312,4 +301,5 @@ namespace CatPrint
         #endregion
 
     }
+    public delegate void OrderMessageHandler(JsonData jsonData);
 }

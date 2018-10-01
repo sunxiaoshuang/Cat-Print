@@ -292,6 +292,18 @@ namespace CatPrint.Model
             // 配送
             bufferArr.Add(PrintLineLeftRight("配送费", double.Parse(order.Freight + "") + ""));
             bufferArr.Add(PrinterCmdUtils.NextLine());
+            // 满减活动打印
+            if(order.SaleFullReduce != null)
+            {
+                bufferArr.Add(PrintLineLeftRight(order.SaleFullReduce.Name, "-￥" + double.Parse(order.SaleFullReduce.ReduceMoney + "") + ""));
+                bufferArr.Add(PrinterCmdUtils.NextLine());
+            }
+            // 优惠券打印
+            if (order.SaleCouponUser != null)
+            {
+                bufferArr.Add(PrintLineLeftRight(order.SaleCouponUser.Name, "-￥" + order.SaleCouponUser.Value + ""));
+                bufferArr.Add(PrinterCmdUtils.NextLine());
+            }
             // 订单金额
             bufferArr.Add(PrinterCmdUtils.AlignRight());
             bufferArr.Add(TextToByte("实付："));

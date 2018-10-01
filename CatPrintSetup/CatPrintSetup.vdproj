@@ -28,13 +28,13 @@
         "Entry"
         {
         "MsmKey" = "8:_2681516D8B1280BE7EB54E79ADA7225A"
-        "OwnerKey" = "8:_7AD1F806031849D8AE17FFDCB6A7A0E0"
+        "OwnerKey" = "8:_02ECD77926FF0E6C79394356EB7CE9E1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_2681516D8B1280BE7EB54E79ADA7225A"
-        "OwnerKey" = "8:_02ECD77926FF0E6C79394356EB7CE9E1"
+        "OwnerKey" = "8:_7AD1F806031849D8AE17FFDCB6A7A0E0"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -76,6 +76,12 @@
         "Entry"
         {
         "MsmKey" = "8:_C8936D992AF54905B13C3EC83704BBEB"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CA03462212C143C88D77978746013728"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -124,30 +130,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_FA40D6D2B5B870CBB90AB1EC0F5A672C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_FFE25884C60B08373E60D7075B150B79"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_76D9CFFB1F4ACDB10AD3A2195D27EEB1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_02ECD77926FF0E6C79394356EB7CE9E1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_7AD1F806031849D8AE17FFDCB6A7A0E0"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -178,7 +160,31 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_FFE25884C60B08373E60D7075B150B79"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_76D9CFFB1F4ACDB10AD3A2195D27EEB1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_02ECD77926FF0E6C79394356EB7CE9E1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_2681516D8B1280BE7EB54E79ADA7225A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_FA40D6D2B5B870CBB90AB1EC0F5A672C"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -460,6 +466,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CA03462212C143C88D77978746013728"
+            {
+            "SourcePath" = "8:..\\CatPrint\\Assets\\Video\\4.mp3"
+            "TargetName" = "8:4.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_42CCD1EC0312446D98858571686C8A7F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD55BB7DE37E4AB7AA3FEF5252E32EFA"
             {
             "SourcePath" = "8:..\\CatPrint\\Assets\\Video\\3.mp3"
@@ -725,7 +751,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:CatPrintSetup"
         "ProductCode" = "8:{8DB06D05-747D-4298-8301-5D1A438E3643}"
-        "PackageCode" = "8:{99AC566F-C2B6-4F19-A7A8-59AA9D9BD4EA}"
+        "PackageCode" = "8:{9CF5D2B7-6F7A-4CD6-B13B-8D3A7F1E290C}"
         "UpgradeCode" = "8:{B7FD5B76-F642-432F-B7F7-F12CF1AE5F40}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1274,7 +1300,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7AD1F806031849D8AE17FFDCB6A7A0E0"
             {
-            "SourcePath" = "8:..\\CatPrint\\obj\\Debug\\CatPrint.exe"
+            "SourcePath" = "8:..\\CatPrint\\obj\\Release\\CatPrint.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_54B6007DA32041028919500742CB760B"
