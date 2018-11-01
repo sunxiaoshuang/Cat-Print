@@ -49,8 +49,10 @@ namespace CatPrint.Code
             // 打印当日序号
             BufferList.Add(PrinterCmdUtils.AlignCenter());
             BufferList.Add(PrinterCmdUtils.FontSizeSetBig(2));
-            BufferList.Add(Encoding.GetEncoding("gbk").GetBytes("#" + Order.Identifier + "简单猫"));
+            BufferList.Add(Encoding.GetEncoding("gbk").GetBytes("#" + Order.Identifier + " 简单猫"));
             BufferList.Add(PrinterCmdUtils.NextLine());
+            BufferList.Add(PrinterCmdUtils.NextLine());
+            BufferList.Add(PrinterCmdUtils.AlignLeft());
             // 备注
             if (!string.IsNullOrEmpty(Order.Remark))
             {
@@ -63,6 +65,10 @@ namespace CatPrint.Code
                 BufferList.Add(PrinterCmdUtils.NextLine());
             }
             BufferList.Add(PrinterCmdUtils.FontSizeSetBig(1));
+
+            BufferList.Add(Encoding.GetEncoding("gbk").GetBytes("下单时间：" + Order.CreateTime.Value.ToString("yyyy-MM-dd HH:mm:ss")));
+
+            BufferList.Add(PrinterCmdUtils.NextLine());
             BufferList.Add(PrinterCmdUtils.SplitLine("-", Printer.Format));
             BufferList.Add(PrinterCmdUtils.NextLine());
             BufferList.Add(PrinterCmdUtils.FontSizeSetBig(2));

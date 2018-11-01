@@ -28,9 +28,9 @@ namespace CatPrint.Code
                 {
                     name += $"({product.Description})";
                 }
-                BufferList.Add(PrinterCmdUtils.FontSizeSetBig(4));
+                BufferList.Add(PrinterCmdUtils.FontSizeSetBig(3));
                 BufferList.Add(PrinterCmdUtils.AlignLeft());
-                BufferList.Add(PrinterCmdUtils.PrintLineLeftRight(name, "*" + double.Parse(product.Quantity + "").ToString(), Printer.FormatLen, 4));
+                BufferList.Add(PrinterCmdUtils.PrintLineLeftRight(name, "*" + double.Parse(product.Quantity + "").ToString(), Printer.FormatLen, 3));
                 BufferList.Add(PrinterCmdUtils.NextLine());
                 AfterPrint();
                 Send();

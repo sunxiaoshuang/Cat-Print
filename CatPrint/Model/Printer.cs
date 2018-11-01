@@ -278,14 +278,16 @@ namespace CatPrint.Model
             bufferArr.Add(PrinterCmdUtils.SplitText("-", "购买商品", Format));
             bufferArr.Add(PrinterCmdUtils.NextLine());
             // 打印商品
+            bufferArr.Add(PrinterCmdUtils.FontSizeSetBig(2));
             foreach (var product in order.Products)
             {
-                var buffer = ProductLine(product);
+                var buffer = ProductLine(product, 2);
                 buffer.ForEach(a => {
                     bufferArr.Add(a);
                     bufferArr.Add(PrinterCmdUtils.NextLine());
                 });
             }
+            bufferArr.Add(PrinterCmdUtils.FontSizeSetBig(1));
             // 分隔
             bufferArr.Add(PrinterCmdUtils.SplitText("-", "其他", Format));
             bufferArr.Add(PrinterCmdUtils.NextLine());
@@ -352,69 +354,87 @@ namespace CatPrint.Model
         {
             return Encoding.GetEncoding("gbk").GetBytes(text);
         }
+        private int maxRightLen = 10;
         /// <summary>
         /// 打印订单商品
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        private List<byte[]> ProductLine(OrderProduct product)
+        private List<byte[]> ProductLine(OrderProduct product, int fontSize = 1)
         {
-            var name = product.Name;
-            var zhQuantity = 0;              // 中文字符数
-            var enQuantity = 0;              // 其他字符数
-            var cutName = string.Empty;      // 截取的名称
-            while (true)
-            {
-                zhQuantity = PrinterCmdUtils.CalcZhQuantity(name);
-                enQuantity = name.Length - zhQuantity;
-                if (zhQuantity * 2 + enQuantity > NameLen)
-                {
-                    cutName += name.Substring(name.Length - 2);
-                    name = name.Substring(0, name.Length - 2);
-                }
-                else
-                {
-                    break;
-                }
-            }
-            var line = name;
-            // 商品名称
-            var nameLen = zhQuantity * 2 + enQuantity;
-            for (int i = 0; i < NameLen - nameLen; i++)
-            {
-                line += " ";
-            }
-            // 商品数量
-            var count = "*" + Convert.ToDouble(product.Quantity);
-            var countLen = count.Length;
-            for (int i = 0; i < QuantityLen - countLen; i++)
-            {
-                count += " ";
-            }
-            line += count;
-            // 商品价格
-            var price = Convert.ToDouble(product.Price).ToString();
-            var priceLength = price.Length;
-            for (int i = 0; i < PriceLen - priceLength; i++)
-            {
-                price = " " + price;
-            }
-            line += price;
-
-            // 返回二进制数组
-            var bufferArr = new List<byte[]>();
-            bufferArr.Add(TextToByte(line));
-            // 超出的商品名称
-            if (!string.IsNullOrEmpty(cutName))
-            {
-                bufferArr.Add(TextToByte(cutName));
-            }
-            // 规格、属性
+            var left = product.Name;
             if (!string.IsNullOrEmpty(product.Description))
             {
-                bufferArr.Add(TextToByte($"（{product.Description}）"));
+                left += "(" + product.Description + ")";
             }
-            return bufferArr;
+            var middle = "*" + Convert.ToDouble(product.Quantity);
+            var right = Convert.ToDouble(product.Price) + "";
+            var place = string.Empty;
+            for (int i = 0; i < maxRightLen - middle.Length - right.Length; i++)
+            {
+                place += " ";
+            }
+            right = middle + place + right;
+
+            var buffer = PrinterCmdUtils.PrintLineLeftRight(left, right, fontSize: fontSize);
+            return new List<byte[]> { buffer };
+
+            //var name = product.Name;
+            //var zhQuantity = 0;              // 中文字符数
+            //var enQuantity = 0;              // 其他字符数
+            //var cutName = string.Empty;      // 截取的名称
+            //while (true)
+            //{
+            //    zhQuantity = PrinterCmdUtils.CalcZhQuantity(name);
+            //    enQuantity = name.Length - zhQuantity;
+            //    if (zhQuantity * 2 + enQuantity > NameLen)
+            //    {
+            //        cutName += name.Substring(name.Length - 2);
+            //        name = name.Substring(0, name.Length - 2);
+            //    }
+            //    else
+            //    {
+            //        break;
+            //    }
+            //}
+            //var line = name;
+            //// 商品名称
+            //var nameLen = zhQuantity * 2 + enQuantity;
+            //for (int i = 0; i < NameLen - nameLen; i++)
+            //{
+            //    line += " ";
+            //}
+            //// 商品数量
+            //var count = "*" + Convert.ToDouble(product.Quantity);
+            //var countLen = count.Length;
+            //for (int i = 0; i < QuantityLen - countLen; i++)
+            //{
+            //    count += " ";
+            //}
+            //line += count;
+            //// 商品价格
+            //var price = Convert.ToDouble(product.Price).ToString();
+            //var priceLength = price.Length;
+            //for (int i = 0; i < PriceLen - priceLength; i++)
+            //{
+            //    price = " " + price;
+            //}
+            //line += price;
+
+            //// 返回二进制数组
+            //var bufferArr = new List<byte[]>();
+            //bufferArr.Add(TextToByte(line));
+            //// 超出的商品名称
+            //if (!string.IsNullOrEmpty(cutName))
+            //{
+            //    bufferArr.Add(TextToByte(cutName));
+            //}
+            //// 规格、属性
+            //if (!string.IsNullOrEmpty(product.Description))
+            //{
+            //    bufferArr.Add(TextToByte($"（{product.Description}）"));
+            //}
+            //return bufferArr;
         }
 
         /// <summary>

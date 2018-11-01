@@ -17,7 +17,7 @@ namespace CatPrint.Code
 
         protected override void Printing()
         {
-            BufferList.Add(PrinterCmdUtils.FontSizeSetBig(4));
+            BufferList.Add(PrinterCmdUtils.FontSizeSetBig(3));
             BufferList.Add(PrinterCmdUtils.AlignLeft());
             foreach (var product in Products)
             {
@@ -26,7 +26,7 @@ namespace CatPrint.Code
                 {
                     name += $"({product.Description})";
                 }
-                BufferList.Add(PrinterCmdUtils.PrintLineLeftRight(name, "*" + double.Parse(product.Quantity + "").ToString(), Printer.FormatLen, 4));
+                BufferList.Add(PrinterCmdUtils.PrintLineLeftRight(name, "*" + double.Parse(product.Quantity + "").ToString(), Printer.FormatLen, 3));
                 BufferList.Add(PrinterCmdUtils.NextLine());
             }
         }
