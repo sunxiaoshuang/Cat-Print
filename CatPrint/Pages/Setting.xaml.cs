@@ -36,6 +36,10 @@ namespace CatPrint.Pages
             editWindow.ShowDialog();
             if (!editWindow.IsSave) return;
             ApplicationObject.App.Printers.Add(editWindow.Printer);
+            if (editWindow.Printer.State == 1)
+            {
+                editWindow.Printer.Open();      // 开始打印任务
+            }
             ApplicationObject.App.Save();
         }
         private void Update(object sender, RoutedEventArgs e)
@@ -47,15 +51,28 @@ namespace CatPrint.Pages
             if (!editWindow.IsSave) return;
             var index = ApplicationObject.App.Printers.IndexOf(printer);
             ApplicationObject.App.Printers[index] = editWindow.Printer;
+            if (editWindow.Printer.State == 1)
+            {
+                editWindow.Printer.Restart();      // 重新开始打印任务
+            }
+            else
+            {
+                editWindow.Printer.Close();        // 停止任务
+            }
             ApplicationObject.App.Save();
         }
         private void Remove(object sender, RoutedEventArgs e)
         {
-            var printer = printView.SelectedItem as Printer;
-            if (printer == null) return;
+            if (!(printView.SelectedItem is Printer printer))
+            {
+                return;
+            }
+
             var result = MessageBox.Show($"确定删除打印机：{printer.Name}吗？", "提示", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.No) return;
             ApplicationObject.App.Printers.Remove(printer);
+            // 移除打印机前，关闭现有任务
+            printer.Close();
             ApplicationObject.App.Save();
         }
         private void SetMenu(object sender, RoutedEventArgs e)

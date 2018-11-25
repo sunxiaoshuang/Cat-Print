@@ -24,6 +24,10 @@ namespace CatPrint.Model
         /// </summary>
         public decimal? OldPrice { get; set; }
         /// <summary>
+        /// 包装费
+        /// </summary>
+        public double? PackagePrice { get; set; }
+        /// <summary>
         /// 运费
         /// </summary>
         public decimal? Freight { get; set; }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CatPrint.Pages" WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
-        Title="绑定菜单" Height="400" Width="700">
+        Title="绑定菜单" Height="600" Width="700">
     <Window.Resources>
         <Style TargetType="{x:Type ListBoxItem}" x:Key="ListBoxItemStyle1">
             <Setter Property="OverridesDefaultStyle" Value="True" />

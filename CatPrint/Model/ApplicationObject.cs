@@ -88,6 +88,10 @@ namespace CatPrint.Model
                 {
                     printer.Foods = new ObservableCollection<int>();
                 }
+                if (printer.State == 1)
+                {
+                    printer.Open();
+                }
             }
         }
 
@@ -114,11 +118,7 @@ namespace CatPrint.Model
             {
                 for (int i = 0; i < printer.Quantity; i++)
                 {
-                    var result = printer.Print(order);
-                    if (result != null)
-                    {
-                        MessageBox.Show(result);
-                    }
+                    printer.Print(order);
                 }
             }
         }

@@ -4,17 +4,23 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WPF.Test.Practise2.Code;
 
 namespace CatPrint.Model
 {
-    public class Printer : INotifyPropertyChanged, ICloneable
+    public class Printer : INotifyPropertyChanged, ICloneable, IDisposable
     {
+        private System.Windows.Controls.ListBox ctl = new System.Windows.Controls.ListBox();            // 确保打印时线程安全
+        private object printLock = new object();                                                        // 确保每台打印机运行时的只有一个线程连接
+        private bool[] isStop = new bool[] { false };                                                                    // 是否停止打印任务
+        private List<Order> PrintQueue = new List<Order>();
         public event PropertyChangedEventHandler PropertyChanged;
         /// <summary>
         /// 打印商品中数量占用的纸张长度
@@ -196,37 +202,87 @@ namespace CatPrint.Model
         /// </summary>
         /// <param name="order"></param>
         /// <returns></returns>
-        public string Print(Order order)
+        public void Print(Order order)
+        {
+            PrintQueue.Add(order);
+        }
+
+        private Task PrintTask { get; set; }
+        /// <summary>
+        /// 开始打印任务
+        /// </summary>
+        public void Open()
+        {
+            isStop[0] = false;
+            if (PrintTask != null && PrintTask.Status == TaskStatus.Running) return;
+            PrintTask = Task.Run(() =>
+            {
+                while (true)
+                {
+                    if (isStop[0]) break;      // 是否停止任务
+                    lock (printLock)
+                    {
+                        if (PrintQueue.Count > 0)
+                        {
+                            try
+                            {
+                                var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                                socket.Connect(new IPEndPoint(IPAddress.Parse(IP), Port));
+                                while (true)
+                                {
+                                    var order = PrintQueue.FirstOrDefault();
+                                    if (order == null) break;
+                                    ctl.Dispatcher.Invoke(() =>
+                                    {
+                                        PrintOrder(order, socket);
+                                    });
+                                    PrintQueue.Remove(order);
+                                }
+                                socket.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                var dirPath = Path.Combine(Directory.GetCurrentDirectory(), "Log\\Error");
+                                if (!Directory.Exists(dirPath))
+                                {
+                                    Directory.CreateDirectory(dirPath);
+                                }
+                                var filepath = Path.Combine(dirPath, DateTime.Now.ToString("yyyy-MM-dd") + ".txt");
+                                var content = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} 打印出错，打印机[{Name}]连接错误，原因：{ex}";
+                                ctl.Dispatcher.Invoke(() =>
+                                {
+                                    var stream = File.AppendText(filepath);
+                                    stream.WriteLine(content);
+                                    stream.Close();
+                                });
+
+                                // 打印失败后，线程等待2秒再开始执行打印任务
+                                Thread.Sleep(2000);
+                            }
+                        }
+                        else
+                        {
+                            // 每0.2秒轮询一次，查看是否有打印任务
+                            Thread.Sleep(200);
+                        }
+                    }
+                }
+            });
+        }
+        private void PrintOrder(Order order, Socket socket)
         {
             if (Type == 2)
             {
-                if (order.Products.Count == 0 || Foods.Count == 0) return null;
+                if (order.Products.Count == 0 || Foods.Count == 0) return;
             }
-            var mySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var ipAddress = IPAddress.Parse(IP);
-            var ipEndPoint = new IPEndPoint(ipAddress, Port);
-            try
+            if (Type == 1)
             {
-                mySocket.Connect(ipEndPoint);
-                if(Type == 1)
-                {
-                    ReceptionPrint(order, mySocket);
-                }
-                else if(Type == 2)
-                {
-                    Backstage(order, mySocket);
-                }
+                ReceptionPrint(order, socket);
             }
-            catch (Exception ex)
+            else if (Type == 2)
             {
-                return $"打印机[{Name}]出错，原因：" + ex.Message;
+                Backstage(order, socket);
             }
-            finally
-            {
-                mySocket.Close();
-            }
-            return null;
-
         }
         /// <summary>
         /// 前台打印
@@ -252,7 +308,7 @@ namespace CatPrint.Model
             bufferArr.Add(PrinterCmdUtils.SplitLine("-", Format));
             bufferArr.Add(PrinterCmdUtils.NextLine());
             // 备注
-            if(!string.IsNullOrEmpty(order.Remark))
+            if (!string.IsNullOrEmpty(order.Remark))
             {
                 bufferArr.Add(PrinterCmdUtils.FontSizeSetBig(2));
                 bufferArr.Add(TextToByte($"备注：{order.Remark}"));
@@ -282,7 +338,8 @@ namespace CatPrint.Model
             foreach (var product in order.Products)
             {
                 var buffer = ProductLine(product, 2);
-                buffer.ForEach(a => {
+                buffer.ForEach(a =>
+                {
                     bufferArr.Add(a);
                     bufferArr.Add(PrinterCmdUtils.NextLine());
                 });
@@ -291,11 +348,17 @@ namespace CatPrint.Model
             // 分隔
             bufferArr.Add(PrinterCmdUtils.SplitText("-", "其他", Format));
             bufferArr.Add(PrinterCmdUtils.NextLine());
-            // 配送
+            // 包装费
+            if (order.PackagePrice.HasValue)
+            {
+                bufferArr.Add(PrintLineLeftRight("包装费", double.Parse(order.PackagePrice + "") + ""));
+                bufferArr.Add(PrinterCmdUtils.NextLine());
+            }
+            // 配送费
             bufferArr.Add(PrintLineLeftRight("配送费", double.Parse(order.Freight + "") + ""));
             bufferArr.Add(PrinterCmdUtils.NextLine());
             // 满减活动打印
-            if(order.SaleFullReduce != null)
+            if (order.SaleFullReduce != null)
             {
                 bufferArr.Add(PrintLineLeftRight(order.SaleFullReduce.Name, "-￥" + double.Parse(order.SaleFullReduce.ReduceMoney + "") + ""));
                 bufferArr.Add(PrinterCmdUtils.NextLine());
@@ -346,6 +409,40 @@ namespace CatPrint.Model
         }
 
         /// <summary>
+        /// 关闭打印任务
+        /// </summary>
+        public void Close()
+        {
+            Dispose();
+        }
+
+        /// <summary>
+        /// 重新开始任务
+        /// </summary>
+        public void Restart()
+        {
+            this.Close();
+            this.Open();
+        }
+
+        public void Dispose()
+        {
+            // 释放打印机资源
+            if (PrintTask == null) return;
+            isStop[0] = true;
+            while (true)
+            {
+                if (PrintTask.Status == TaskStatus.RanToCompletion)
+                {
+                    PrintTask.Dispose();
+                    PrintTask = null;
+                    PrintQueue.RemoveAll(a => true);
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
         /// 将内容转化为字节数组
         /// </summary>
         /// <param name="text"></param>
@@ -354,7 +451,8 @@ namespace CatPrint.Model
         {
             return Encoding.GetEncoding("gbk").GetBytes(text);
         }
-        private int maxRightLen = 10;
+
+        private int maxRightLen = 10;           // 打印商品时，商品数量与商品价格最多占10个字符位
         /// <summary>
         /// 打印订单商品
         /// </summary>
@@ -378,63 +476,6 @@ namespace CatPrint.Model
 
             var buffer = PrinterCmdUtils.PrintLineLeftRight(left, right, fontSize: fontSize);
             return new List<byte[]> { buffer };
-
-            //var name = product.Name;
-            //var zhQuantity = 0;              // 中文字符数
-            //var enQuantity = 0;              // 其他字符数
-            //var cutName = string.Empty;      // 截取的名称
-            //while (true)
-            //{
-            //    zhQuantity = PrinterCmdUtils.CalcZhQuantity(name);
-            //    enQuantity = name.Length - zhQuantity;
-            //    if (zhQuantity * 2 + enQuantity > NameLen)
-            //    {
-            //        cutName += name.Substring(name.Length - 2);
-            //        name = name.Substring(0, name.Length - 2);
-            //    }
-            //    else
-            //    {
-            //        break;
-            //    }
-            //}
-            //var line = name;
-            //// 商品名称
-            //var nameLen = zhQuantity * 2 + enQuantity;
-            //for (int i = 0; i < NameLen - nameLen; i++)
-            //{
-            //    line += " ";
-            //}
-            //// 商品数量
-            //var count = "*" + Convert.ToDouble(product.Quantity);
-            //var countLen = count.Length;
-            //for (int i = 0; i < QuantityLen - countLen; i++)
-            //{
-            //    count += " ";
-            //}
-            //line += count;
-            //// 商品价格
-            //var price = Convert.ToDouble(product.Price).ToString();
-            //var priceLength = price.Length;
-            //for (int i = 0; i < PriceLen - priceLength; i++)
-            //{
-            //    price = " " + price;
-            //}
-            //line += price;
-
-            //// 返回二进制数组
-            //var bufferArr = new List<byte[]>();
-            //bufferArr.Add(TextToByte(line));
-            //// 超出的商品名称
-            //if (!string.IsNullOrEmpty(cutName))
-            //{
-            //    bufferArr.Add(TextToByte(cutName));
-            //}
-            //// 规格、属性
-            //if (!string.IsNullOrEmpty(product.Description))
-            //{
-            //    bufferArr.Add(TextToByte($"（{product.Description}）"));
-            //}
-            //return bufferArr;
         }
 
         /// <summary>
@@ -450,7 +491,7 @@ namespace CatPrint.Model
             var zhRight = PrinterCmdUtils.CalcZhQuantity(right);        // 右边文本的中文字符长度
             var enRight = right.Length - zhRight;       // 右边文本的其他字符长度
             var len = FormatLen - ((zhLeft * 2 + enLeft + zhRight * 2 + enRight) * fontSize);            // 缺少的字符长度
-            if(len > 0)
+            if (len > 0)
             {
                 for (int i = 0; i < len / fontSize; i++)
                 {
@@ -462,7 +503,7 @@ namespace CatPrint.Model
                 var times = 1;
                 while (true)
                 {
-                    if(FormatLen * times + len > 0)
+                    if (FormatLen * times + len > 0)
                     {
                         break;
                     }
@@ -475,5 +516,6 @@ namespace CatPrint.Model
             }
             return TextToByte(left + right);
         }
+
     }
 }

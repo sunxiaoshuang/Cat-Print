@@ -22,19 +22,38 @@ namespace CatPrint.Code
             if (Products.Count == 0) return;
             foreach (var product in Products)
             {
-                BeforePrint();
-                var name = product.Name;
-                if (!string.IsNullOrEmpty(product.Description))
+                if (product.Feature == Enum.ProductFeature.SetMeal)
                 {
-                    name += $"({product.Description})";
+                    product.Tag1.ForEach(item =>
+                    {
+                        if (Printer.Foods.Contains(item.ID))
+                        {
+                            var name = item.Name + $"[{product.Name}]";
+                            Format(name, product.Description, product.Quantity + "");
+                        }
+                    });
+                    continue;
                 }
-                BufferList.Add(PrinterCmdUtils.FontSizeSetBig(3));
-                BufferList.Add(PrinterCmdUtils.AlignLeft());
-                BufferList.Add(PrinterCmdUtils.PrintLineLeftRight(name, "*" + double.Parse(product.Quantity + "").ToString(), Printer.FormatLen, 3));
-                BufferList.Add(PrinterCmdUtils.NextLine());
-                AfterPrint();
-                Send();
+                else
+                {
+                    Format(product.Name, product.Description, product.Quantity + "");
+                }
             }
+        }
+
+        private void Format(string name, string description, string quantity)
+        {
+            BeforePrint();
+            if (!string.IsNullOrEmpty(description))
+            {
+                name += $"({description})";
+            }
+            BufferList.Add(PrinterCmdUtils.FontSizeSetBig(3));
+            BufferList.Add(PrinterCmdUtils.AlignLeft());
+            BufferList.Add(PrinterCmdUtils.PrintLineLeftRight(name, "*" + double.Parse(quantity).ToString(), Printer.FormatLen, 3));
+            BufferList.Add(PrinterCmdUtils.NextLine());
+            AfterPrint();
+            Send();
         }
         protected override void Printing()
         {

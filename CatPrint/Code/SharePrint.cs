@@ -22,21 +22,39 @@ namespace CatPrint.Code
             {
                 for (int i = 0; i < product.Quantity; i++)
                 {
-                    BeforePrint();
-                    var name = product.Name;
-                    if(!string.IsNullOrEmpty(product.Description))
+                    if (product.Feature == Enum.ProductFeature.SetMeal)
                     {
-                        name += $"({product.Description})";
+                        product.Tag1.ForEach(item =>
+                        {
+                            if (Printer.Foods.Contains(item.ID))
+                            {
+                                Format(item.Name + $"[{product.Name}]", product.Description);
+                            }
+                        });
                     }
-                    BufferList.Add(PrinterCmdUtils.FontSizeSetBig(3));
-                    BufferList.Add(PrinterCmdUtils.AlignLeft());
-                    BufferList.Add(PrinterCmdUtils.PrintLineLeftRight(name, "*1", Printer.FormatLen, 3));
-                    BufferList.Add(PrinterCmdUtils.NextLine());
-                    AfterPrint();
-                    Send();
+                    else
+                    {
+                        Format(product.Name, product.Description);
+                    }
                 }
             }
         }
+
+        private void Format(string name, string description)
+        {
+            BeforePrint();
+            if (!string.IsNullOrEmpty(description))
+            {
+                name += $"({description})";
+            }
+            BufferList.Add(PrinterCmdUtils.FontSizeSetBig(3));
+            BufferList.Add(PrinterCmdUtils.AlignLeft());
+            BufferList.Add(PrinterCmdUtils.PrintLineLeftRight(name, "*1", Printer.FormatLen, 3));
+            BufferList.Add(PrinterCmdUtils.NextLine());
+            AfterPrint();
+            Send();
+        }
+
         protected override void Printing()
         {
         }

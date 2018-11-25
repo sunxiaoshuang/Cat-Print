@@ -12,6 +12,11 @@ namespace CatPrint.Enum
     public enum ProductFeature : int
     {
         /// <summary>
+        /// 默认值
+        /// </summary>
+        [Description("默认值")]
+        None = 0,
+        /// <summary>
         /// 招牌
         /// </summary>
         [Description("招牌")]

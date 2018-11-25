@@ -230,20 +230,20 @@ namespace CatPrint
             try
             {
                 var buffer = new byte[512];
-                string code = e.Data;
+                var code = e.Data;
+                code = code.Split('|')[0];
                 var order = await Request.GetOrder(code);
-                if (order == null) return;
-                var result = await Request.Recevice(order);
+                //var result = await Request.Recevice(order);
                 this.Dispatcher.Invoke(() =>
                 {
-                    var isAuto = false;             // 是否已经接收订单
-                    if (ApplicationObject.App.Business.IsAutoReceipt)
-                    {
-                        // 如果当前商户处于自动接单状态，则处理订单
-                        isAuto = result.Success;
-                    }
+                    //var isAuto = false;             // 是否已经接收订单
+                    //if (ApplicationObject.App.Business.IsAutoReceipt)
+                    //{
+                    //    // 如果当前商户处于自动接单状态，则处理订单
+                    //    isAuto = result.Success;
+                    //}
                     var filename = string.Empty;
-                    if (!isAuto)
+                    if(order.Status == Enum.OrderStatus.Payed)
                     {
                         filename = "1.mp3";
                     }

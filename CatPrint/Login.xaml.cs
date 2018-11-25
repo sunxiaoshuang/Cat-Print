@@ -55,7 +55,7 @@ namespace CatPrint
             }
             try
             {
-                var data = await Code.Request.Login(name, password);
+                var data = await CatPrint.Code.Request.Login(name, password);
                 if (data.Success)
                 {
                     var business = JsonConvert.DeserializeObject<Business>(data.Data.ToString());

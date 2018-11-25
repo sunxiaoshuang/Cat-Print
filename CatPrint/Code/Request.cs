@@ -52,8 +52,7 @@ namespace CatPrint.Code
             {
                 var param = new StringContent(JsonConvert.SerializeObject(paging));
                 param.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-                var res = await client.PostAsync(ApiUrl + $"/order/getOrder/0?businessId={ApplicationObject.App.Business.ID}&createTime={DateTime.Now:yyyy-MM-dd}", param);
-                //var res = await client.PostAsync(ApiUrl + $"/order/getOrder/0?businessId={ApplicationObject.App.Business.ID}", param);
+                var res = await client.PostAsync(ApiUrl + $"/order/getOrderFromClient/0?businessId={ApplicationObject.App.Business.ID}&createTime={DateTime.Now:yyyy-MM-dd}", param);
                 var content = await res.Content.ReadAsStringAsync();
                 var jObj = JObject.Parse(content);
                 var list = JsonConvert.DeserializeObject<List<Order>>(jObj["data"]["list"].ToString());

@@ -32,6 +32,10 @@ namespace CatPrint.Model
         /// </summary>
         public ProductFeature Feature { get; set; }
         /// <summary>
+        /// 套餐商品的id集
+        /// </summary>
+        public string ProductIdSet { get; set; }
+        /// <summary>
         /// 商品属性
         /// </summary>
         public virtual ICollection<ProductAttribute> Attributes { get; set; }

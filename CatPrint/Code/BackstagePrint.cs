@@ -1,4 +1,5 @@
-﻿using CatPrint.Model;
+﻿using CatPrint.Enum;
+using CatPrint.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace CatPrint.Code
             this.Order = order;
             this.Printer = printer;
             _socket = socket;
-            Products = Order.Products.Where(a => Printer.Foods.Contains(a.ProductId.Value)).ToList();
+            Products = Order.Products.Where(a => a.Feature == ProductFeature.SetMeal || Printer.Foods.Contains(a.ProductId.Value)).ToList();
         }
         public virtual void Print()
         {

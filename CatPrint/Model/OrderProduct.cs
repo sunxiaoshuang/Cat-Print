@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CatPrint.Enum;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -52,5 +53,18 @@ namespace CatPrint.Model
         /// </summary>
         public int? FormatId { get; set; }
         public virtual ProductFormat Format { get; set; }
+        /// <summary>
+        /// 套餐商品的id集
+        /// </summary>
+        public string ProductIdSet { get; set; }
+        /// <summary>
+        /// 商品特性
+        /// </summary>
+        public ProductFeature Feature { get; set; }
+        /// <summary>
+        /// 备用属性，记录套餐商品
+        /// </summary>
+        public List<Product> Tag1 { get; set; }
+
     }
 }

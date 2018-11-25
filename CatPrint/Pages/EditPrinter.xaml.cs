@@ -30,7 +30,7 @@ namespace CatPrint.Pages
         {
             if(printer == null)
             {
-                Printer = new Printer { Id = Guid.NewGuid().ToString(), Format = 58, Port = 9100, Quantity = 1, State = 1, Type = 1, Mode = PrinterMode.Food, Foods = new ObservableCollection<int>() };
+                Printer = new Printer { Id = Guid.NewGuid().ToString(), Format = 80, Port = 9100, Quantity = 1, State = 1, Type = 1, Mode = PrinterMode.Food, Foods = new ObservableCollection<int>() };
             }
             else
             {
