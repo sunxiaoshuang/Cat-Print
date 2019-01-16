@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace WPF.Test.Practise2.Code
+namespace CatPrint.Code
 {
     public class PrinterCmdUtils
     {

@@ -16,7 +16,7 @@ namespace CatPrint.Converter
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var obj = (OrderProduct)value;
-            return "￥ " + double.Parse((obj.Quantity * obj.Price).ToString());
+            return "￥ " + double.Parse(obj.Price + "").ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

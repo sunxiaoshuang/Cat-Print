@@ -11,7 +11,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using WPF.Test.Practise2.Code;
 
 namespace CatPrint.Model
 {
@@ -86,7 +85,7 @@ namespace CatPrint.Model
             }
         }
 
-        public int _type;
+        private int _type;
         /// <summary>
         /// 打印机类型，[1:前台，2：后厨]
         /// </summary>

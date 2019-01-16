@@ -120,6 +120,7 @@
     <Compile Include="Code\JsonData.cs" />
     <Compile Include="Code\OrderPrint.cs" />
     <Compile Include="Code\PagingQuery.cs" />
+    <Compile Include="Code\PostNewOrderData.cs" />
     <Compile Include="Code\PrinterCmdUtils.cs" />
     <Compile Include="Code\PrintHelper.cs" />
     <Compile Include="Code\Request.cs" />

@@ -25,7 +25,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <StackPanel Margin="5,0">
-            <Label Content="#1 配送信息" FontSize="16"></Label>
+            <Label x:Name="info" FontSize="16"></Label>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>

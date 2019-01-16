@@ -30,6 +30,7 @@ namespace CatPrint.Pages
 
         private void LoadData()
         {
+            info.Content = $"#{Order.Identifier} 配送信息";
             address.Content = Order.ReceiverName + "-" + Order.Phone + "-" + Order.ReceiverAddress;
             fullReduce.Content = Order.SaleFullReduce == null ? "" : ("-￥" + Order.SaleFullReduce.ReduceMoney);
             coupon.Content = Order.SaleCouponUser == null ? "" : ("-￥" + Order.SaleCouponUser.Value);

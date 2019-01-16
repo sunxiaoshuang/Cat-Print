@@ -1,7 +1,11 @@
 ﻿using CatPrint.Code;
 using CatPrint.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 //using System.Net.Sockets;
 //using System.Net.WebSockets;
@@ -10,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 using WebSocketSharp;
 
 namespace CatPrint
@@ -36,8 +41,9 @@ namespace CatPrint
         public MainWindow()
         {
             InitializeComponent();
-            socketLink = string.Format(ConfigurationManager.AppSettings["ClientWebSocketUri"], ApplicationObject.App.Business.ID);
-            InitWebSocket();
+            //socketLink = string.Format(ConfigurationManager.AppSettings["ClientWebSocketUri"], ApplicationObject.App.Business.ID);
+            //InitWebSocket();
+            InitTimer();
             this.Closing += (a, e) =>
             {
                 var result = MessageBox.Show("确定退出吗？", "提示", MessageBoxButton.YesNo);
@@ -169,97 +175,179 @@ namespace CatPrint
 
         #endregion
 
-        #region 
+        #region websocket连接
         /// <summary>
         /// 初始化Socket连接
         /// </summary>
-        private void InitWebSocket()
+        //private void InitWebSocket()
+        //{
+        //    socket = new WebSocket(socketLink);
+        //    socket.Connect();
+        //    socket.OnMessage += MessageHandler;
+        //    socket.OnClose += (sender, e) =>
+        //    {
+        //        if (e.Code == 1000)
+        //        {
+        //            MessageBox.Show(e.Reason);
+        //        }
+        //        else
+        //        {
+        //            var isSuccess = Connect();
+        //            if (!isSuccess)
+        //            {
+        //                IsConnect = false;
+        //                PlayMedia("Assets/Video/4.mp3");
+        //                //while (MessageBox.Show($"网络异常，新订单提醒已关闭，点击确定后重新连接", "通信异常", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        //                //{
+        //                //    if(Connect())
+        //                //    {
+        //                //        MessageBox.Show("已成功连接");
+        //                //        break;
+        //                //    }
+        //                //}
+        //                ThreadPool.QueueUserWorkItem(obj =>
+        //                {
+        //                    var index = 0;
+        //                    var control = (MainWindow)obj;
+        //                    while (!control.IsConnect)
+        //                    {
+        //                        if (InternetGetConnectedState(out index, 0))
+        //                        {
+        //                            ((Control)obj).Dispatcher.Invoke(() =>
+        //                            {
+        //                                var result = Connect();
+        //                                if (result)
+        //                                {
+        //                                    MessageBox.Show("新订单提醒已恢复正常");
+        //                                    control.IsConnect = true;
+        //                                    return;
+        //                                }
+        //                            });
+        //                        }
+        //                    }
+        //                }, this);
+        //            }
+        //        }
+        //    };
+        //}
+
+
+        ///// <summary>
+        ///// 连接断开后重新连接
+        ///// </summary>
+        ///// <returns></returns>
+        //private bool Connect()
+        //{
+        //    // 尝试2次连接
+        //    var times = 2;
+        //    for (int i = 0; i < times; i++)
+        //    {
+        //        InitWebSocket();
+        //        if (socket.ReadyState == WebSocketState.Open)
+        //        {
+        //            return true;
+        //        }
+        //        // 每次连接后等待10秒再连
+        //        Thread.Sleep(10000);
+        //    }
+        //    return false;
+        //}
+
+        //private async void MessageHandler(object sender, MessageEventArgs e)
+        //{
+        //    try
+        //    {
+        //        var buffer = new byte[512];
+        //        var code = e.Data;
+        //        code = code.Split('|')[0];
+        //        var order = await Request.GetOrder(code);
+        //        this.Dispatcher.Invoke(() =>
+        //        {
+        //            var filename = string.Empty;
+        //            if (order.Status == Enum.OrderStatus.Payed)
+        //            {
+        //                filename = "1.mp3";
+        //            }
+        //            else
+        //            {
+        //                filename = "2.mp3";
+        //            }
+        //            PlayMedia("Assets/Video/" + filename);
+        //            ApplicationObject.Print(order);
+        //        }, DispatcherPriority.Normal);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message);
+        //    }
+        //}
+
+        #endregion
+
+        #region 定时请求服务器，读取新订单
+        private static DispatcherTimer readDataTimer = new DispatcherTimer();
+        private static string orderUrl;
+        private static bool isError = false;    // 记录是否出错
+        private void InitTimer()
         {
-            socket = new WebSocket(socketLink);
-            socket.Connect();
-            socket.OnMessage += MessageHandler;
-            socket.OnClose += (sender, e) =>
-            {
-                if (e.Code == 1000)
-                {
-                    MessageBox.Show(e.Reason);
-                }
-                else
-                {
-                    var isSuccess = Connect();
-                    if (!isSuccess)
-                    {
-                        IsConnect = false;
-                        PlayMedia("Assets/Video/4.mp3");
-                        //while (MessageBox.Show($"网络异常，新订单提醒已关闭，点击确定后重新连接", "通信异常", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                        //{
-                        //    if(Connect())
-                        //    {
-                        //        MessageBox.Show("已成功连接");
-                        //        break;
-                        //    }
-                        //}
-                        ThreadPool.QueueUserWorkItem(obj =>
-                        {
-                            var index = 0;
-                            var control = (MainWindow)obj;
-                            while (!control.IsConnect)
-                            {
-                                if (InternetGetConnectedState(out index, 0))
-                                {
-                                    ((Control)obj).Dispatcher.Invoke(() =>
-                                    {
-                                        var result = Connect();
-                                        if (result)
-                                        {
-                                            MessageBox.Show("新订单提醒已恢复正常");
-                                            control.IsConnect = true;
-                                            return;
-                                        }
-                                    });
-                                }
-                            }
-                        }, this);
-                    }
-                }
-            };
+            readDataTimer.Tick += new EventHandler(HandleOrder);
+            readDataTimer.Interval = new TimeSpan(0, 0, 0, 5);          // 5秒取一次
+            orderUrl = string.Format(ConfigurationManager.AppSettings["OrderUrl"], ApplicationObject.App.Business.ID);
+            readDataTimer.Start();
         }
 
-        private async void MessageHandler(object sender, MessageEventArgs e)
+        private async void HandleOrder(object sender, EventArgs e)
         {
             try
             {
-                var buffer = new byte[512];
-                var code = e.Data;
-                code = code.Split('|')[0];
-                var order = await Request.GetOrder(code);
-                //var result = await Request.Recevice(order);
-                this.Dispatcher.Invoke(() =>
+                using (var client = new HttpClient())
                 {
-                    //var isAuto = false;             // 是否已经接收订单
-                    //if (ApplicationObject.App.Business.IsAutoReceipt)
-                    //{
-                    //    // 如果当前商户处于自动接单状态，则处理订单
-                    //    isAuto = result.Success;
-                    //}
-                    var filename = string.Empty;
-                    if(order.Status == Enum.OrderStatus.Payed)
+                    var res = await client.GetAsync(orderUrl);
+                    res.EnsureSuccessStatusCode();
+                    var content = await res.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<JsonData>(content);
+                    if (result.Data == null) return;
+                    var data = (JArray)result.Data;
+                    var orders = new List<Order>();
+                    foreach (string item in data)
                     {
-                        filename = "1.mp3";
+                        orders.Add(JsonConvert.DeserializeObject<Order>(item));
                     }
-                    else
+                    var firstOrder = orders[0];
+                    this.Dispatcher.Invoke(() =>
                     {
-                        filename = "2.mp3";
-                    }
-                    PlayMedia("Assets/Video/" + filename);
-                    ApplicationObject.Print(order);
-                }, System.Windows.Threading.DispatcherPriority.Normal);
+                        var filename = string.Empty;
+                        if (firstOrder.Status == Enum.OrderStatus.Payed)
+                        {
+                            filename = "1.mp3";
+                        }
+                        else
+                        {
+                            filename = "2.mp3";
+                        }
+                        PlayMedia("Assets/Video/" + filename);
+                    }, DispatcherPriority.Normal);
+                    orders.ForEach(order =>
+                    {
+                        ApplicationObject.Print(order);
+                    });
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                if (isError) return;
+                isError = true;
+                var result = MessageBox.Show("读取新订单错误：" + ex.Message, "提示", MessageBoxButton.OK);
+                if(result == MessageBoxResult.OK)
+                {
+                    isError = false;
+                }
+                
             }
         }
+
+        #endregion
+
 
         /// <summary>
         /// 播放提示音
@@ -276,29 +364,6 @@ namespace CatPrint
                 player.Clone();
             };
         }
-
-        /// <summary>
-        /// 连接断开后重新连接
-        /// </summary>
-        /// <returns></returns>
-        private bool Connect()
-        {
-            // 尝试2次连接
-            var times = 2;
-            for (int i = 0; i < times; i++)
-            {
-                InitWebSocket();
-                if (socket.ReadyState == WebSocketState.Open)
-                {
-                    return true;
-                }
-                // 每次连接后等待10秒再连
-                Thread.Sleep(10000);
-            }
-            return false;
-        }
-
-        #endregion
 
     }
     public delegate void OrderMessageHandler(JsonData jsonData);

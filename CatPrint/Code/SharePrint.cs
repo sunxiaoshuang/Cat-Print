@@ -5,7 +5,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using CatPrint.Model;
-using WPF.Test.Practise2.Code;
 
 namespace CatPrint.Code
 {
