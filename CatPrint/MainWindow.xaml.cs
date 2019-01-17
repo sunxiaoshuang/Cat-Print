@@ -253,34 +253,34 @@ namespace CatPrint
         //    return false;
         //}
 
-        //private async void MessageHandler(object sender, MessageEventArgs e)
-        //{
-        //    try
-        //    {
-        //        var buffer = new byte[512];
-        //        var code = e.Data;
-        //        code = code.Split('|')[0];
-        //        var order = await Request.GetOrder(code);
-        //        this.Dispatcher.Invoke(() =>
-        //        {
-        //            var filename = string.Empty;
-        //            if (order.Status == Enum.OrderStatus.Payed)
-        //            {
-        //                filename = "1.mp3";
-        //            }
-        //            else
-        //            {
-        //                filename = "2.mp3";
-        //            }
-        //            PlayMedia("Assets/Video/" + filename);
-        //            ApplicationObject.Print(order);
-        //        }, DispatcherPriority.Normal);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message);
-        //    }
-        //}
+        private async void MessageHandler(object sender, MessageEventArgs e)
+        {
+            try
+            {
+                var buffer = new byte[512];
+                var code = e.Data;
+                code = code.Split('|')[0];
+                var order = await Request.GetOrder(code);
+                this.Dispatcher.Invoke(() =>
+                {
+                    var filename = string.Empty;
+                    if (order.Status == Enum.OrderStatus.Payed)
+                    {
+                        filename = "1.mp3";
+                    }
+                    else
+                    {
+                        filename = "2.mp3";
+                    }
+                    PlayMedia("Assets/Video/" + filename);
+                    ApplicationObject.Print(order);
+                }, DispatcherPriority.Normal);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
         #endregion
 
@@ -336,14 +336,42 @@ namespace CatPrint
             catch (Exception ex)
             {
                 if (isError) return;
-                isError = true;
-                var result = MessageBox.Show("读取新订单错误：" + ex.Message, "提示", MessageBoxButton.OK);
-                if(result == MessageBoxResult.OK)
-                {
-                    isError = false;
-                }
-                
+                //isError = true;
+                //var result = MessageBox.Show("读取新订单错误：" + ex.Message, "提示", MessageBoxButton.OK);
+                //if (result == MessageBoxResult.OK)
+                //{
+                //    isError = false;
+                //}
+                AutoClosingMessageBox.Show("读取新订单错误：" + ex.Message, "提示", 3000);
             }
+        }
+
+        public class AutoClosingMessageBox
+        {
+            Timer _timeoutTimer;
+            string _caption;
+            AutoClosingMessageBox(string text, string caption, int timeout)
+            {
+                _caption = caption;
+                _timeoutTimer = new Timer(OnTimerElapsed, null, timeout, Timeout.Infinite);
+                MessageBox.Show(text, caption);
+            }
+            public static void Show(string text, string caption, int timeout)
+            {
+                new AutoClosingMessageBox(text, caption, timeout);
+            }
+            void OnTimerElapsed(object state)
+            {
+                IntPtr mbWnd = FindWindow(null, _caption);
+                if (mbWnd != IntPtr.Zero)
+                    SendMessage(mbWnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                _timeoutTimer.Dispose();
+            }
+            const int WM_CLOSE = 0x0010;
+            [DllImport("user32.dll", SetLastError = true)]
+            static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+            [DllImport("user32.dll", CharSet = CharSet.Auto)]
+            static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
         }
 
         #endregion

@@ -23,6 +23,7 @@ namespace CatPrint.Code
             {
                 if (product.Feature == Enum.ProductFeature.SetMeal)
                 {
+                    if (product.Tag1 == null) continue;
                     product.Tag1.ForEach(item =>
                     {
                         if (Printer.Foods.Contains(item.ID))
